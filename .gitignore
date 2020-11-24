@@ -127,3 +127,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+venv
+.idea
+run.sh
+check.sh
+__pycache__
+Pipfile
+Pipfile.lock
