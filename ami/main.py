@@ -1,8 +1,7 @@
 from pyami_asterisk import AMIClient
 import redis
-import sys
-sys.path.append('../')
-import cdr 
+import json
+import time
 
 class PassAMIChannelToRedis():
     def __init__(self, ami_host='127.0.0.1', ami_port=5038, ami_username='admin', 
@@ -13,45 +12,99 @@ class PassAMIChannelToRedis():
         self.channels = list()
         self._redis = redis.Redis(host=redis_host, port=redis_port, db=db)
 
-    def parce_redis_calls():
-        pass
-
-    def parse_channel(self, events):
-        print('parse_channel', events)
-        if events.get('Event', None) == 'CoreShowChannelsComplete':
-            print(None)
- 
     def start_in_call(self, events):
         print('start_in_call', events)
-        pass
+        id_call = events.get('identifier', None)
+        call_info = {
+                     'direction' : 'in',
+                     'phone_from' : events.get('FROM', None), 
+                     'phone_to' : events.get('TO', None) ,
+                     'start_call_time' : events.get('datetime', int(time.time())), 
+                     'start_talk_time' : None, 
+                     'line_description' : None,
+                     'record_url' : None,
+                    }
+        if id_call is not None and events.get('FROM', None) is not None \
+                               and events.get('TO', None) is not None:
+            _redis.setex(f"call:{id_call}", 3600, value=json.dumps(call_info)) 
 
     def call_to_operator(self, events):
         print('call_to_operator', events)
-        pass
+        id_call = events.get('identifier', None)
+        operator = events.get('operator', None)
+        if id_call is not None and operator is not None:
+            call_info_str = _redis.get(f"call:{id_call}")
+            if call_info_str is not None:
+                call_info = json.dump(call_info_str)
+                call_info['line_description'] = events.get('operator', None)
+                ttl = int(_redis.pttl(f"call:{id_call}") / 100)
+                _redis.setex(f"call:{id_call}", ttl, value=json.dumps(call_info))
 
     def answer_operator(self, events):
         print('answer_operator', events)
-        pass
+        id_call = events.get('identifier', None)
+        operator = events.get('operator', None)
+        if id_call is not None and operator is not None:
+            call_info_str = _redis.get(f"call:{id_call}") 
+            if call_info_str is not None:
+                call_info = json.dump(call_info_str)
+                call_info['line_description'] = operator
+                call_info['start_talk_time'] = events.get('datetime', int(time.time()))
+                ttl = int(_redis.pttl(f"call:{id_call}") / 100)
+                _redis.setex(f"call:{id_call}", ttl, value=json.dumps(call_info))
 
     def endcall_to_operator(self, events):
         print('endcall_to_operator', events)
-        pass
+        id_call = events.get('identifier', None)
+        operator = events.get('operator', None)
+        if id_call is not None and operator is not None:
+            call_info_str = _redis.get(f"call:{id_call}")
+            if call_info_str is not None:
+                call_info = json.dump(call_info_str)
+                if call_info.get('line_description') == operator:
+                    call_infop['line_description'] = None
+                    ttl = int(_redis.pttl(f"call:{id_call}") / 100)
+                    _redis.setex(f"call:{id_call}", ttl, value=json.dumps(call_info))
 
     def end_in_call(self, events):
         print('end_in_call', events)
-        pass
+        id_call = events.get('identifier', None)
+        if id_call is not None:
+            _redis.delete(f"call:{id_call}")
 
     def start_out_call(self, events):
         print('start_out_call', events)
-        pass
+        id_call = events.get('identifier', None)
+        call_info = {
+                     'direction' : 'out',
+                     'phone_from' : events.get('FROM', None),
+                     'phone_to' : events.get('TO', None),
+                     'start_call_time' : events.get('datetime', int(time.time())),
+                     'start_talk_time' : None,
+                     'line_description' : events.get('operator', None),
+                     'record_url' : None,
+                    }
+        if id_call is not None and events.get('FROM', None) is not None \
+                               and events.get('TO', None) is not None:
+            _redis.setex(f"call:{id_call}", 3600, value=json.dumps(call_info))
+
 
     def answer_out_call(self, events):
         print('answer_out_call', events)
-        pass
+        id_call = events.get('identifier', None)
+        if id_call is not None: 
+            call_info_str = _redis.get(f"call:{id_call}")
+            if call_info_str is not None:
+                call_info = json.dump(call_info_str)
+                call_info['start_talk_time'] = events.get('datetime', int(time.time()))
+                ttl = int(_redis.pttl(f"call:{id_call}") / 100)
+                _redis.setex(f"call:{id_call}", ttl, value=json.dumps(call_info))
 
     def end_out_call(self, events):
         print('end_out_call', events)
-        pass
+        id_call = events.get('identifier', None)
+        if id_call is not None:
+            _redis.delete(f"call:{id_call}")
 
     def get_channels(self):
         self._ami.register_event(["start-in-call"], self.start_in_call)

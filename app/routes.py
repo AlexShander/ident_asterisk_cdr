@@ -56,7 +56,6 @@ def get_finised_calls():
     offset = request.args.get('offset', 0)
     db_cdr = DBCdr()
     return jsonify(db_cdr.get_cdrs(date_time_from, date_time_to, limit, offset))
-#    return jsonify(test_json())
 
 
 @app.route("/GetOngoingCalls", methods=['GET'])
