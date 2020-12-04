@@ -1,3 +1,4 @@
 python-dateutil
 pyami-asterisk
+asyncio
 
