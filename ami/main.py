@@ -2,16 +2,16 @@ from pyami_asterisk import AMIClient
 import redis
 import json
 import time
-import config
+from config import Config
 
 class PassAMIChannelToRedis():
     def __init__(self, ami_host='127.0.0.1', ami_port=5038, ami_username='admin', 
                  ami_secret='password', redis_host='127.0.0.1', 
-                 redis_port=6379, db=0):
+                 redis_port=6379, redis_db=0):
         self._ami = AMIClient(host=ami_host, port=ami_port, 
                               username=ami_username, secret=ami_secret)
         self.channels = list()
-        self._redis = redis.Redis(host=redis_host, port=redis_port, db=db)
+        self._redis = redis.Redis(host=redis_host, port=redis_port, db=redis_db)
 
     def start_in_call(self, events):
         print('start_in_call', events)
@@ -127,7 +127,7 @@ def main():
                                         ami_secret=config.AMI_PASSWORD,
                                         redis_host=config.REDIS_HOST,
                                         redis_port=int(config.REDIS_PORT),
-                                        redis_base=int(config.REDIS_DB))
+                                        redis_db=int(config.REDIS_DB))
     ami_channel.get_channels()
 
 
