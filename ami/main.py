@@ -2,6 +2,7 @@ from pyami_asterisk import AMIClient
 import redis
 import json
 import time
+import config
 
 class PassAMIChannelToRedis():
     def __init__(self, ami_host='127.0.0.1', ami_port=5038, ami_username='admin', 
@@ -35,7 +36,7 @@ class PassAMIChannelToRedis():
         if id_call is not None and operator is not None:
             call_info_str = self._redis.get(f"call:{id_call}")
             if call_info_str is not None:
-                call_info = json.dump(call_info_str)
+                call_info = json.loads(call_info_str)
                 call_info['line_description'] = events.get('operator', None)
                 ttl = int(self._redis.pttl(f"call:{id_call}") / 100)
                 self._redis.setex(f"call:{id_call}", ttl, value=json.dumps(call_info))
@@ -47,7 +48,7 @@ class PassAMIChannelToRedis():
         if id_call is not None and operator is not None:
             call_info_str = self._redis.get(f"call:{id_call}") 
             if call_info_str is not None:
-                call_info = json.dump(call_info_str)
+                call_info = json.loads(call_info_str)
                 call_info['line_description'] = operator
                 call_info['start_talk_time'] = events.get('datetime', int(time.time()))
                 ttl = int(self._redis.pttl(f"call:{id_call}") / 100)
@@ -60,7 +61,7 @@ class PassAMIChannelToRedis():
         if id_call is not None and operator is not None:
             call_info_str = self._redis.get(f"call:{id_call}")
             if call_info_str is not None:
-                call_info = json.dump(call_info_str)
+                call_info = json.loads(call_info_str)
                 if call_info.get('line_description') == operator:
                     call_infop['line_description'] = None
                     ttl = int(self._redis.pttl(f"call:{id_call}") / 100)
@@ -95,7 +96,7 @@ class PassAMIChannelToRedis():
         if id_call is not None: 
             call_info_str = self._redis.get(f"call:{id_call}")
             if call_info_str is not None:
-                call_info = json.dump(call_info_str)
+                call_info = json.loads(call_info_str)
                 call_info['start_talk_time'] = events.get('datetime', int(time.time()))
                 ttl = int(self._redis.pttl(f"call:{id_call}") / 100)
                 self._redis.setex(f"call:{id_call}", ttl, value=json.dumps(call_info))
@@ -118,17 +119,16 @@ class PassAMIChannelToRedis():
         self._ami.connect()
 
 
-def test_module():
-    ami_channel = PassAMIChannelToRedis(ami_host='127.0.0.1', ami_port=5038, 
-                                        ami_username='userevents', 
-                                        ami_secret='password',
-                                        redis_host='127.0.0.1',
-                                        redis_port=6379)
-    ami_channel.get_channels()
-
-
 def main():
-    test_module()
+    config = Config()
+    ami_channel = PassAMIChannelToRedis(ami_host=config.AMI_ADDRESS, 
+                                        ami_port=int(config.AMI_PORT),
+                                        ami_username=config.AMI_USER,
+                                        ami_secret=config.AMI_PASSWORD,
+                                        redis_host=config.REDIS_HOST,
+                                        redis_port=int(config.REDIS_PORT),
+                                        redis_base=int(config.REDIS_DB))
+    ami_channel.get_channels()
 
 
 if __name__ == '__main__':
