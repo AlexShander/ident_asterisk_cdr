@@ -5,7 +5,6 @@ from flask import request
 from app import app
 from cdr import Cdr
 from cdr import DBCdr
-from config import Config
 from datetime import datetime
 from dateutil import tz
 from dateutil import parser
@@ -46,5 +45,7 @@ def get_get_ingoing_calls():
 #        abort(404, description="Resource not found")
     limit = request.args.get('limit', 500)
     offset = request.args.get('offset', 0)
-    get_channels = GetChannelsFromRedis()
+    get_channels = GetChannelsFromRedis(redis_host=app.config.REDIS_HOST,
+                                        
+                                       )
     return jsonify(test_json())

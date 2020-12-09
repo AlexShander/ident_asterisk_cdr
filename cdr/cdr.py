@@ -20,7 +20,7 @@ from cdr.datasets import Cdr
 
 
 class DBCdr():
-    def __init__(self, mysql_user='root', mysql_password='3nf82s', mysql_address='127.0.0.1', mysql_port='3306'):
+    def __init__(self, mysql_user='root', mysql_password='', mysql_address='127.0.0.1', mysql_port='3306'):
         self.mysql_user = mysql_user
         self.mysql_password = mysql_password
         self.mysql_address = mysql_address

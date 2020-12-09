@@ -26,12 +26,3 @@ class GetChannelsFromRedis():
     def close(self):
         self._redis.close()
 
-
-def main():
-    get_channels = GetChannelsFromRedis(redis_host='127.0.0.1', redis_port=6379)
-    cdr_list = get_channels.get_list_calls()
-    print(cdr_list)
-
-
-if __name__ == '__main__':
-    main()
