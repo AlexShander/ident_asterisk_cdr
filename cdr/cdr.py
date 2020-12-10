@@ -15,8 +15,8 @@ from sqlalchemy import outerjoin
 from datetime import datetime
 from cdr.tables import QueueLogForExcel
 from cdr.tables import CDRViewer
-from cdr.config import Config
 from cdr.datasets import Cdr
+from cdr.config import Config
 
 
 class DBCdr():
@@ -30,7 +30,6 @@ class DBCdr():
                     self.mysql_password, self.mysql_address), echo=True)
 
     def get_cdrs(self, start_date: datetime, stop_date: datetime, limit=500, offset=0):
-        print(start_date, stop_date)
         conn = self.engine.connect()
         stmnt_queuelog = select([QueueLogForExcel.time.label('calldate'),
                                 sql.expression.literal_column("\'in\'", String).\
@@ -72,9 +71,9 @@ class DBCdr():
         conn.close()
         list_cdr = []
         for db_cdr in results:
-            print(db_cdr[0], db_cdr[1], db_cdr[2],
-                            db_cdr[3], db_cdr[4], db_cdr[5], None)
             list_cdr.append(Cdr(db_cdr[0], db_cdr[1], db_cdr[2], 
-                            db_cdr[3], int(db_cdr[4]), int(db_cdr[5]), db_cdr[6]).__dict__)
+                            db_cdr[3], int(db_cdr[4]), int(db_cdr[5]), db_cdr[6],
+                            None).__dict__
+                           )
         return list_cdr
 

@@ -34,7 +34,11 @@ def get_finised_calls():
     date_time_to = parser.isoparse(request.args.get('dateTimeTo', None)).astimezone(tz.tzlocal())
     limit = request.args.get('limit', 500)
     offset = request.args.get('offset', 0)
-    db_cdr = DBCdr()
+    db_cdr = DBCdr(mysql_user=app.config.from_envvar("MYSQL_USER"),
+                   mysql_password=app.config.from_envvar("MYSQL_PASSWORD"),
+                   mysql_address=app.config.from_envvar("MYSQL_ADDRESS"),
+                   mysql_port=app.config.from_envvar("MYSQL_PORT")
+                  )
     return jsonify(db_cdr.get_cdrs(date_time_from, date_time_to, limit, offset))
 
 
@@ -45,7 +49,31 @@ def get_get_ingoing_calls():
 #        abort(404, description="Resource not found")
     limit = request.args.get('limit', 500)
     offset = request.args.get('offset', 0)
-    get_channels = GetChannelsFromRedis(redis_host=app.config.REDIS_HOST,
-                                        
+    get_channels = GetChannelsFromRedis(host=app.config.from_envvar("REDIS_HOST"),
+                                        port=app.config.from_envvar("REDIS_PORT"),
+                                        db=app.config.from_envvar("REDIS_DB")
                                        )
-    return jsonify(test_json())
+    list_cdr = list()
+    for tmp_cdr in get_channels.get_list_calls():
+        start_call_time = datetime.fromtimestamp(int(tmp_cdr.get('start_call_time')))
+        start_talk_time = 0 if tmp_cdr.get('start_talk_time', None) is None else int(tmp_cdr.get('start_talk_time', 0))
+        if start_talk_time == 0:
+            wait_in_seconds = int(datetime.now().timestamp()) - int(tmp_cdr.get('start_call_time'))
+            talk_in_seconds = None
+        else:
+            wait_in_seconds = start_talk_time - int(tmp_cdr.get('start_call_time'))
+            talk_in_seconds = int(datetime.now().timestamp()) - start_talk_time 
+        list_cdr.append(Cdr(start_call_time,
+                            tmp_cdr.get('direction'),
+                            tmp_cdr.get('phone_from'),
+                            tmp_cdr.get('PhoneTo'),
+                            wait_in_seconds,
+                            talk_in_seconds,
+                            None,
+                            tmp_cdr.get('line_description')
+                            ).__dict__
+                       )
+
+    get_channels.close()
+    return jsonify(list_cdr)
+

@@ -12,7 +12,7 @@ class Cdr(object):
         "RecordUrl": null.
     """
     def __init__(self, date_and_time, direction, phone_from, phone_to,
-                 wait_in_seconds, talk_in_seconds, record_url):
+                 wait_in_seconds, talk_in_seconds, record_url, line_description):
         self._date_and_time = dict(descr='DateAndTime', data=date_and_time)
         self._direction =  dict(descr='Direction', data=direction)
         if phone_from == '':
@@ -35,6 +35,10 @@ class Cdr(object):
             self._record_url == dict(descr='RecordUrl', data=None)
         else:
             self._record_url = dict(descr='RecordUrl', data=record_url)
+        if line_description == '':
+            self._line_description == dict(descr='RecordUrl', data=None)
+        else:
+            self._line_description = dict(descr='LineDescription', data=line_description)           
         self.__dict__= self.create_dict()
 
     def create_dict(self):
@@ -49,7 +53,8 @@ class Cdr(object):
                     self._phone_to['descr']: self._phone_to['data'],
                     self._wait_in_seconds['descr']: self._wait_in_seconds['data'],
                     self._talk_in_seconds['descr']: self._talk_in_seconds['data'],
-                    self._record_url['descr']: self._record_url['data']}
+                    self._record_url['descr']: self._record_url['data']},
+                    self._line_description['descr']: self._line_description['data']}
         return cdr_dict
 
 

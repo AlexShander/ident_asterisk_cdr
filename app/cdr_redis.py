@@ -3,8 +3,8 @@ import ast
 
 
 class GetChannelsFromRedis():
-    def __init__(self, redis_host='127.0.0.1', redis_port=6379, db=0):
-        self._redis = redis.Redis(host=redis_host, port=redis_port, db=db)
+    def __init__(self, host='127.0.0.1', port=6379, db=0):
+        self._redis = redis.Redis(host=host, port=port, db=db)
 
     def _eval_to_dict(self, any_string: str):
         try:
