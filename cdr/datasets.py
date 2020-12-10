@@ -32,11 +32,11 @@ class Cdr(object):
         else:
             self._talk_in_seconds = dict(descr='TalkInSeconds', data=talk_in_seconds)
         if record_url == '':
-            self._record_url == dict(descr='RecordUrl', data=None)
+            self._record_url = dict(descr='RecordUrl', data=None)
         else:
             self._record_url = dict(descr='RecordUrl', data=record_url)
         if line_description == '':
-            self._line_description == dict(descr='RecordUrl', data=None)
+            self._line_description = dict(descr='RecordUrl', data=None)
         else:
             self._line_description = dict(descr='LineDescription', data=line_description)           
         self.__dict__= self.create_dict()
@@ -53,7 +53,7 @@ class Cdr(object):
                     self._phone_to['descr']: self._phone_to['data'],
                     self._wait_in_seconds['descr']: self._wait_in_seconds['data'],
                     self._talk_in_seconds['descr']: self._talk_in_seconds['data'],
-                    self._record_url['descr']: self._record_url['data']},
+                    self._record_url['descr']: self._record_url['data'],
                     self._line_description['descr']: self._line_description['data']}
         return cdr_dict
 

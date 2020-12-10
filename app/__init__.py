@@ -7,3 +7,4 @@ print(app.config)
 
 
 from app import routes
+from app import cdr_redis

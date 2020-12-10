@@ -8,8 +8,7 @@ from cdr import DBCdr
 from datetime import datetime
 from dateutil import tz
 from dateutil import parser
-from cdr_redis import GetChannelsFromRedis
-import cdr_test
+from . import GetChannelsFromRedis
 
 
 @app.errorhandler(404)
@@ -34,10 +33,10 @@ def get_finised_calls():
     date_time_to = parser.isoparse(request.args.get('dateTimeTo', None)).astimezone(tz.tzlocal())
     limit = request.args.get('limit', 500)
     offset = request.args.get('offset', 0)
-    db_cdr = DBCdr(mysql_user=app.config.from_envvar("MYSQL_USER"),
-                   mysql_password=app.config.from_envvar("MYSQL_PASSWORD"),
-                   mysql_address=app.config.from_envvar("MYSQL_ADDRESS"),
-                   mysql_port=app.config.from_envvar("MYSQL_PORT")
+    db_cdr = DBCdr(mysql_user=app.config.get("MYSQL_USER"),
+                   mysql_password=app.config.get("MYSQL_PASSWORD"),
+                   mysql_address=app.config.get("MYSQL_ADDRESS"),
+                   mysql_port=app.config.get("MYSQL_PORT")
                   )
     return jsonify(db_cdr.get_cdrs(date_time_from, date_time_to, limit, offset))
 
@@ -49,9 +48,9 @@ def get_get_ingoing_calls():
 #        abort(404, description="Resource not found")
     limit = request.args.get('limit', 500)
     offset = request.args.get('offset', 0)
-    get_channels = GetChannelsFromRedis(host=app.config.from_envvar("REDIS_HOST"),
-                                        port=app.config.from_envvar("REDIS_PORT"),
-                                        db=app.config.from_envvar("REDIS_DB")
+    get_channels = GetChannelsFromRedis(host=app.config.get("REDIS_HOST"),
+                                        port=app.config.get("REDIS_PORT"),
+                                        db=app.config.get("REDIS_DB")
                                        )
     list_cdr = list()
     for tmp_cdr in get_channels.get_list_calls():

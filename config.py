@@ -12,6 +12,6 @@ class Config(object):
     MYSQL_PORT = os.environ.get('MYSQL_PORT') or '3306'
     REDIS_HOST = os.environ.get('REDIST_HOST') or '127.0.0.1'
     REDIS_PORT = os.environ.get('REDIS_PORT') or '6379'
-    REDIS_DB = os.environ.get('REDIS_DB') OR '0'
+    REDIS_DB = os.environ.get('REDIS_DB') or '0'
 
 
