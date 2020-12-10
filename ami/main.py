@@ -38,7 +38,7 @@ class PassAMIChannelToRedis():
             if call_info_str is not None:
                 call_info = json.loads(call_info_str)
                 call_info['line_description'] = events.get('operator', None)
-                ttl = int(self._redis.pttl(f"call:{id_call}") / 100)
+                ttl = int(self._redis.pttl(f"call:{id_call}") / 1000)
                 self._redis.setex(f"call:{id_call}", ttl, value=json.dumps(call_info))
 
     def answer_operator(self, events):
@@ -51,7 +51,7 @@ class PassAMIChannelToRedis():
                 call_info = json.loads(call_info_str)
                 call_info['line_description'] = operator
                 call_info['start_talk_time'] = events.get('datetime', int(time.time()))
-                ttl = int(self._redis.pttl(f"call:{id_call}") / 100)
+                ttl = int(self._redis.pttl(f"call:{id_call}") / 1000)
                 self._redis.setex(f"call:{id_call}", ttl, value=json.dumps(call_info))
 
     def endcall_to_operator(self, events):
@@ -64,7 +64,7 @@ class PassAMIChannelToRedis():
                 call_info = json.loads(call_info_str)
                 if call_info.get('line_description') == operator:
                     call_infop['line_description'] = None
-                    ttl = int(self._redis.pttl(f"call:{id_call}") / 100)
+                    ttl = int(self._redis.pttl(f"call:{id_call}") / 1000)
                     self._redis.setex(f"call:{id_call}", ttl, value=json.dumps(call_info))
 
     def end_in_call(self, events):
@@ -98,7 +98,7 @@ class PassAMIChannelToRedis():
             if call_info_str is not None:
                 call_info = json.loads(call_info_str)
                 call_info['start_talk_time'] = events.get('datetime', int(time.time()))
-                ttl = int(self._redis.pttl(f"call:{id_call}") / 100)
+                ttl = int(self._redis.pttl(f"call:{id_call}") / 1000)
                 self._redis.setex(f"call:{id_call}", ttl, value=json.dumps(call_info))
 
     def end_out_call(self, events):

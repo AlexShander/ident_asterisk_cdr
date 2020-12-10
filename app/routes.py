@@ -8,7 +8,7 @@ from cdr import DBCdr
 from datetime import datetime
 from dateutil import tz
 from dateutil import parser
-from . import GetChannelsFromRedis
+from .cdr_redis import GetChannelsFromRedis
 
 
 @app.errorhandler(404)
