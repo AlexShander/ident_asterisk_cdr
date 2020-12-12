@@ -35,10 +35,11 @@ class DBCdr():
                                 sql.expression.literal_column("\'in\'", String).\
                                     label('direction'),
                                 QueueLogForExcel.CLID_Client.label('src'),
-                                QueueLogForExcel.agent.label('dst'),
+                                QueueLogForExcel.DID.label('dst'),
                                 QueueLogForExcel.Wait_Time.label('wait_time'),
                                 QueueLogForExcel.billsec.label('billsec'),
-                                CDRViewer.recordingfile]).select_from(
+                                CDRViewer.recordingfile,
+                                QueueLogForExcel.agent.label('LineDescription')]).select_from(
                                     join(QueueLogForExcel, CDRViewer, 
                                          and_(
                                               QueueLogForExcel.callid == CDRViewer.linkedid,
@@ -51,12 +52,13 @@ class DBCdr():
         stmnt_cdr = select([CDRViewer.calldate.label('calldate'),
                             sql.expression.literal_column("\'out\'", String).\
                                 label('direction'),
-                            CDRViewer.src.label('src'),
+                            CDRViewer.did.label('src'),
                             CDRViewer.dst.label('dst'),
                             CDRViewer.duration.op('-')(CDRViewer.billsec).\
                                 label('wait_time'),
                             CDRViewer.billsec.label('billsec'),
-                            CDRViewer.recordingfile]).\
+                            CDRViewer.recordingfile,
+                            CDRViewer.src.label('LineDescription')]).\
                                 where(
                                     and_(
                                         CDRViewer.calldate >= start_date, 
@@ -73,7 +75,7 @@ class DBCdr():
         for db_cdr in results:
             list_cdr.append(Cdr(db_cdr[0], db_cdr[1], db_cdr[2], 
                             db_cdr[3], int(db_cdr[4]), int(db_cdr[5]), db_cdr[6],
-                            None).__dict__
+                            db_cdr[7]).__dict__
                            )
         return list_cdr
 

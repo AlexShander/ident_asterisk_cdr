@@ -12,10 +12,11 @@ class QueueLogForExcel(Base):
     id = Column(Integer, primary_key=True)
     time = Column(DateTime)
     CLID_Client = Column(String)
-    agent = Column(String)
+    DID = Column(String)
     billsec = Column(Integer)
     Wait_Time = Column(Integer)
     callid = Column(String)
+    agent = Column(String)
 
 
 class CDRViewer(Base):
@@ -29,3 +30,4 @@ class CDRViewer(Base):
     dstchannel = Column(String)
     linkedid = Column(String)
     recordingfile = Column(String)
+    did = Column(String)

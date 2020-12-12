@@ -48,6 +48,7 @@ def get_get_ingoing_calls():
 #        abort(404, description="Resource not found")
     limit = request.args.get('limit', 500)
     offset = request.args.get('offset', 0)
+    #Change HOST to ADDRESS
     get_channels = GetChannelsFromRedis(host=app.config.get("REDIS_HOST"),
                                         port=app.config.get("REDIS_PORT"),
                                         db=app.config.get("REDIS_DB")
@@ -65,7 +66,7 @@ def get_get_ingoing_calls():
         list_cdr.append(Cdr(start_call_time,
                             tmp_cdr.get('direction'),
                             tmp_cdr.get('phone_from'),
-                            tmp_cdr.get('PhoneTo'),
+                            tmp_cdr.get('phone_to'),
                             wait_in_seconds,
                             talk_in_seconds,
                             None,

@@ -1,5 +1,3 @@
-python-dateutil
 pyami-asterisk
 asyncio
-pymysql
 redis
