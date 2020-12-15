@@ -59,7 +59,7 @@ def get_get_ingoing_calls():
         start_talk_time = 0 if tmp_cdr.get('start_talk_time', None) is None else int(tmp_cdr.get('start_talk_time', 0))
         if start_talk_time == 0:
             wait_in_seconds = int(datetime.now().timestamp()) - int(tmp_cdr.get('start_call_time'))
-            talk_in_seconds = None
+            talk_in_seconds = 0
         else:
             wait_in_seconds = start_talk_time - int(tmp_cdr.get('start_call_time'))
             talk_in_seconds = int(datetime.now().timestamp()) - start_talk_time 
