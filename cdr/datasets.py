@@ -1,4 +1,5 @@
 from dateutil import tz 
+from cdr.config import Config
 
 class Cdr(object):
     """ The Cdr class contains record of one cdr.
@@ -38,7 +39,8 @@ class Cdr(object):
         if line_description == '':
             self._line_description = dict(descr='RecordUrl', data=None)
         else:
-            self._line_description = dict(descr='LineDescription', data=line_description)           
+            self._line_description = dict(descr='LineDescription', 
+                data=Config.operators_list.get(line_description, line_description))
         self.__dict__= self.create_dict()
 
     def create_dict(self):
