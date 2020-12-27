@@ -32,11 +32,13 @@ def get_finised_calls():
     date_time_from = parser.isoparse(request.args.get('dateTimeFrom', None)).astimezone(tz.tzlocal())
     date_time_to = parser.isoparse(request.args.get('dateTimeTo', None)).astimezone(tz.tzlocal())
     limit = request.args.get('limit', 500)
-    offset = request.args.get('offset', 0)
+    offset = request.args.get('offSet', 0)
     db_cdr = DBCdr(mysql_user=app.config.get("MYSQL_USER"),
                    mysql_password=app.config.get("MYSQL_PASSWORD"),
                    mysql_address=app.config.get("MYSQL_ADDRESS"),
-                   mysql_port=app.config.get("MYSQL_PORT")
+                   mysql_port=app.config.get("MYSQL_PORT"),
+                   domain=app.config.get("DOMAIN"),
+                   dir_record=app.config.get("DIR_RECORD")
                   )
     return jsonify(db_cdr.get_cdrs(date_time_from, date_time_to, limit, offset))
 
@@ -47,7 +49,7 @@ def get_get_ingoing_calls():
 #    if authorized_key != app.config['IDENT_INTEGRATION_KEY']:
 #        abort(404, description="Resource not found")
     limit = request.args.get('limit', 500)
-    offset = request.args.get('offset', 0)
+    offset = request.args.get('offSet', 0)
     #Change HOST to ADDRESS
     get_channels = GetChannelsFromRedis(host=app.config.get("REDIS_HOST"),
                                         port=app.config.get("REDIS_PORT"),

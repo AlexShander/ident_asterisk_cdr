@@ -20,14 +20,26 @@ from cdr.config import Config
 
 
 class DBCdr():
-    def __init__(self, mysql_user='root', mysql_password='', mysql_address='127.0.0.1', mysql_port='3306'):
+    def __init__(self, mysql_user='root', mysql_password='', 
+                 mysql_address='127.0.0.1', mysql_port='3306',
+                 domain='', dir_record=''):
         self.mysql_user = mysql_user
         self.mysql_password = mysql_password
         self.mysql_address = mysql_address
         self.mysql_port = mysql_port
+        self.domain = domain
+        self.dir_record = str(dir_record)
         self.engine = create_engine(
                 u"mysql+pymysql://{}:{}@{}/asteriskcdrdb".format(self.mysql_user,
                     self.mysql_password, self.mysql_address), echo=True)
+
+    def change_file_url(self, record_file_name=''):
+        if record_file_name is not None:
+            del_path_file_name = record_file_name.replace(self.dir_record, '', 1)
+            url_file_name = f"{self.domain}{del_path_file_name}"
+            return(url_file_name)
+        else:
+            return(None)
 
     def get_cdrs(self, start_date: datetime, stop_date: datetime, limit=500, offset=0):
         conn = self.engine.connect()
@@ -68,13 +80,14 @@ class DBCdr():
                                         )
                                       )
         select_union = union(stmnt_queuelog, stmnt_cdr).\
-                           limit(limit).offset(int(limit) * int(offset))
+                           limit(limit).offset(int(offset))
         results = conn.execute(select_union).fetchall()
         conn.close()
         list_cdr = []
         for db_cdr in results:
             list_cdr.append(Cdr(db_cdr[0], db_cdr[1], db_cdr[2], 
-                            db_cdr[3], int(db_cdr[4]), int(db_cdr[5]), db_cdr[6],
+                            db_cdr[3], int(db_cdr[4]), int(db_cdr[5]), 
+                            self.change_file_url(record_file_name=db_cdr[6]),
                             db_cdr[7]).__dict__
                            )
         return list_cdr
