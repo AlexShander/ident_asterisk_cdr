@@ -55,7 +55,7 @@ class DBCdr():
                                     join(QueueLogForExcel, CDRViewer, 
                                          and_(
                                               QueueLogForExcel.callid == CDRViewer.linkedid,
-                                              QueueLogForExcel.agent == CDRViewer.dst
+                                              QueueLogForExcel.agent == CDRViewer.realdst
                                               ),
                                               isouter=True)).\
                                     where(and_(QueueLogForExcel.time >= start_date,
@@ -65,7 +65,7 @@ class DBCdr():
                             sql.expression.literal_column("\'out\'", String).\
                                 label('direction'),
                             CDRViewer.did.label('src'),
-                            CDRViewer.dst.label('dst'),
+                            CDRViewer.realdst.label('dst'),
                             CDRViewer.duration.op('-')(CDRViewer.billsec).\
                                 label('wait_time'),
                             CDRViewer.billsec.label('billsec'),

@@ -6,6 +6,7 @@ from app import app
 from cdr import Cdr
 from cdr import DBCdr
 from datetime import datetime
+from datetime import timedelta
 from dateutil import tz
 from dateutil import parser
 from .cdr_redis import GetChannelsFromRedis
@@ -30,6 +31,8 @@ def get_finised_calls():
 #    if authorized_key != app.config['IDENT_INTEGRATION_KEY']:
 #        abort(404, description="Resource not found")
     date_time_from = parser.isoparse(request.args.get('dateTimeFrom', None)).astimezone(tz.tzlocal())
+#    date_time_from =  parser.isoparse(request.args.get('dateTimeTo', None)
+#                                     ).astimezone(tz.tzlocal())  - timedelta(days=30)
     date_time_to = parser.isoparse(request.args.get('dateTimeTo', None)).astimezone(tz.tzlocal())
     limit = request.args.get('limit', 500)
     offset = request.args.get('offSet', 0)
@@ -40,7 +43,9 @@ def get_finised_calls():
                    domain=app.config.get("DOMAIN"),
                    dir_record=app.config.get("DIR_RECORD")
                   )
-    return jsonify(db_cdr.get_cdrs(date_time_from, date_time_to, limit, offset))
+    response = jsonify(db_cdr.get_cdrs(date_time_from, date_time_to, limit, offset))
+    response.headers["Content-Type"] = "application/json; charset=utf-8"
+    return response
 
 
 @app.route("/GetOngoingCalls", methods=['GET'])
@@ -77,5 +82,7 @@ def get_get_ingoing_calls():
                        )
 
     get_channels.close()
-    return jsonify(list_cdr)
+    response = jsonify(list_cdr)
+    response.headers["Content-Type"] = "application/json; charset=utf-8"
+    return response
 

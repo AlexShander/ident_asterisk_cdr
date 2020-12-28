@@ -24,7 +24,7 @@ class CDRViewer(Base):
     id = Column(Integer, primary_key=True)
     calldate = Column(DateTime)
     src = Column(String)
-    dst = Column(String)
+    realdst = Column(String)
     billsec = Column(Integer)
     duration = Column(Integer)
     dstchannel = Column(String)

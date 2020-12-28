@@ -25,7 +25,7 @@ class Cdr(object):
         else:
             self._phone_to = dict(descr='PhoneTo', data=phone_to)
         if wait_in_seconds < 1:
-            self._wait_in_seconds = dict(descr='WaitInSeconds', data=None)
+            self._wait_in_seconds = dict(descr='WaitInSeconds', data=0)
         else:
             self._wait_in_seconds = dict(descr='WaitInSeconds', data=wait_in_seconds)
         if talk_in_seconds < 1: 
