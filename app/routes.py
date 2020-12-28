@@ -30,9 +30,11 @@ def get_finised_calls():
     authorized_key = request.headers.get('IDENT-Integration-Key')
 #    if authorized_key != app.config['IDENT_INTEGRATION_KEY']:
 #        abort(404, description="Resource not found")
-    date_time_from = parser.isoparse(request.args.get('dateTimeFrom', None)).astimezone(tz.tzlocal())
-#    date_time_from =  parser.isoparse(request.args.get('dateTimeTo', None)
-#                                     ).astimezone(tz.tzlocal())  - timedelta(days=30)
+    if IS_FIRST_SYNC  == 1:
+        date_time_from = parser.isoparse(request.args.get('dateTimeFrom', None)).astimezone(tz.tzlocal())
+    else:
+        date_time_from =  parser.isoparse(request.args.get('dateTimeFrom', None)
+                                         ).astimezone(tz.tzlocal())  - timedelta(days=2)
     date_time_to = parser.isoparse(request.args.get('dateTimeTo', None)).astimezone(tz.tzlocal())
     limit = request.args.get('limit', 500)
     offset = request.args.get('offSet', 0)
@@ -55,7 +57,6 @@ def get_get_ingoing_calls():
 #        abort(404, description="Resource not found")
     limit = request.args.get('limit', 500)
     offset = request.args.get('offSet', 0)
-    #Change HOST to ADDRESS
     get_channels = GetChannelsFromRedis(host=app.config.get("REDIS_HOST"),
                                         port=app.config.get("REDIS_PORT"),
                                         db=app.config.get("REDIS_DB")
