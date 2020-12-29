@@ -34,7 +34,7 @@ def get_finised_calls():
     if app.config.get("IS_FIRST_SYNC")  == "0" and \
         (datetime.now() - timedelta(days=90)).time() > date_time_from.time():
         date_time_from = datetime.now()  - timedelta(days=3)
-        date_time_to = parser.isoparse(request.args.get('dateTimeTo', None)).astimezone(tz.tzlocal())
+    date_time_to = parser.isoparse(request.args.get('dateTimeTo', None)).astimezone(tz.tzlocal())
     limit = request.args.get('limit', 500)
     offset = request.args.get('offSet', 0)
     db_cdr = DBCdr(mysql_user=app.config.get("MYSQL_USER"),
