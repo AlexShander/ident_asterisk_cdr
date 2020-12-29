@@ -30,12 +30,11 @@ def get_finised_calls():
     authorized_key = request.headers.get('IDENT-Integration-Key')
 #    if authorized_key != app.config['IDENT_INTEGRATION_KEY']:
 #        abort(404, description="Resource not found")
-    if IS_FIRST_SYNC  == 1:
-        date_time_from = parser.isoparse(request.args.get('dateTimeFrom', None)).astimezone(tz.tzlocal())
-    else:
-        date_time_from =  parser.isoparse(request.args.get('dateTimeFrom', None)
-                                         ).astimezone(tz.tzlocal())  - timedelta(days=2)
-    date_time_to = parser.isoparse(request.args.get('dateTimeTo', None)).astimezone(tz.tzlocal())
+    date_time_from  = parser.isoparse(request.args.get('dateTimeFrom', None)).astimezone(tz.tzlocal())
+    if app.config.get("IS_FIRST_SYNC")  == "0" and \
+        (datetime.now() - timedelta(days=90)).time() > date_time_from.time():
+        date_time_from = datetime.now()  - timedelta(days=3)
+        date_time_to = parser.isoparse(request.args.get('dateTimeTo', None)).astimezone(tz.tzlocal())
     limit = request.args.get('limit', 500)
     offset = request.args.get('offSet', 0)
     db_cdr = DBCdr(mysql_user=app.config.get("MYSQL_USER"),
