@@ -2,3 +2,4 @@ docker_run.sh
 __pycache__
 check.sh
 run.sh
+run_project.sh

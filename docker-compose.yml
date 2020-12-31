@@ -1,0 +1,57 @@
+version: '3.1'
+
+services:
+  asterisk_redis: 
+    image: redis:alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - ident_redis:/data
+    networks:
+      - overlay
+    dns:
+      - "hostname: asterisk_redis"
+    restart: always
+
+  ami_collector:
+    build: ./ami
+    networks:
+      - overlay
+    dns:
+      - "hostname: ami_collector"
+    environment:
+      - AMI_ADDRESS=${AMI_ADDRESS}
+      - AMI_USER=${AMI_USER}
+      - AMI_PASSWORD=${AMI_PASSWORD}
+      - REDIS_HOST=asterisk_redis
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+    restart: always
+
+  ident_flask_cdr:
+    build: ./.
+    environment:
+      - IDENT_INTEGRATION_KEY=${IDENT_INTEGRATION_KEY}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - REDIS_HOST=asterisk_redis
+      - MYSQL_ADDRESS=172.17.0.1
+      - DOMAIN=${DOMAIN}
+      - DIR_RECORD=${DIR_RECORD}
+      - IS_FIRST_SYNC=${IS_FIRST_SYNC}
+    networks:
+      - overlay
+    ports:
+      - "9090:9988"
+    dns:
+      - "hostname: ident_flask_cdr"
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+    restart: always
+
+volumes:
+  ident_redis:
+
+networks:
+  overlay:

@@ -13,6 +13,6 @@ COPY ./ident_cdr.py /ident_asterisk_cdr/
 COPY ./app/ /ident_asterisk_cdr/app/
 COPY ./cdr/ /ident_asterisk_cdr/cdr/
 
-ENTRYPOINT ["uwsgi", "--socket=0.0.0.0:8080", "--protocol=http", "-w", "ident_cdr:app"]
+ENTRYPOINT ["uwsgi", "--socket=0.0.0.0:9988", "--protocol=http", "-w", "ident_cdr:app"]
 
-EXPOSE 8080
+EXPOSE 9988
