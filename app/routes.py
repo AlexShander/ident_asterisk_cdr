@@ -31,8 +31,9 @@ def get_finised_calls():
 #    if authorized_key != app.config['IDENT_INTEGRATION_KEY']:
 #        abort(404, description="Resource not found")
     date_time_from  = parser.isoparse(request.args.get('dateTimeFrom', None)).astimezone(tz.tzlocal())
-    if app.config.get("IS_FIRST_SYNC")  == "0" and \
-        (datetime.now() - timedelta(days=90)).time() > date_time_from.time():
+    ninety_days_ago = (datetime.now() - timedelta(days=90)).astimezone(tz.tzlocal())
+    is_first_sync = app.config.get("IS_FIRST_SYNC")
+    if is_first_sync  == "0" and ninety_days_ago > date_time_from:
         date_time_from = datetime.now()  - timedelta(days=3)
     date_time_to = parser.isoparse(request.args.get('dateTimeTo', None)).astimezone(tz.tzlocal())
     limit = request.args.get('limit', 500)
